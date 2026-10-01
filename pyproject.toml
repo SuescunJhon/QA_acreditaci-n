@@ -1,0 +1,10 @@
+[project]
+name = "qa_acreditacion"
+version = "0.1.0"
+description = "Sistema de preguntas y respuestas (QA) para documentos con factores de acreditación de la escuela de ingeniería de sistemas y computación (EISC)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "langchain-openai>=1.6.7",
+    "streamlit>=1.64.0",
+]
