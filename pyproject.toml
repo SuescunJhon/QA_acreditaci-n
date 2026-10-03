@@ -5,6 +5,11 @@ description = "Sistema de preguntas y respuestas (QA) para documentos con factor
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "langchain>=1.4.3",
     "langchain-openai>=1.6.7",
+    "langchain-openrouter>=0.2.9",
+    "langchain-text-splitters>=1.1.2",
+    "pymupdf4llm>=1.28.2",
+    "qdrant-client>=1.19.1",
     "streamlit>=1.64.0",
 ]
