@@ -10,3 +10,9 @@ wheels/
 .venv
 .streamlit/secrets.toml
 .vscode
+streamlit_components.py
+opencode.json
+AGENTS.md
+# datos locales y configuración
+data/
+.env

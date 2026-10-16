@@ -1,8 +1,13 @@
-from src.config.settings import MODELO_EMBEDDING
-from services.clients import get_embedding
+from typing import Protocol, Sequence
 
-def embedding(texts):
-    if not texts:
-        return []
-    return get_embedding().embed_documents(texts)
-    
+
+class Embedder(Protocol):
+    def embed_documents(self, texts: list[str]) -> list[list[float]]: ...
+    def embed_query(self, text: str) -> list[float]: ...
+
+
+def embed_in_batches(embedder: Embedder, texts: Sequence[str], batch_size: int = 64) -> list[list[float]]:
+    vectors: list[list[float]] = []
+    for i in range(0, len(texts), batch_size):
+        vectors.extend(embedder.embed_documents(list(texts[i : i + batch_size])))
+    return vectors

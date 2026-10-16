@@ -16,7 +16,7 @@ def _procesar_pagina(texto, num_pagina):
         nonlocal contador
         contador += 1
         tablas.append({"numero_pagina": num_pagina, "contenido_md": match.group(0).strip()})
-        return f"\n[tabla {contador['i']} de la pagina {num_pagina}]\n"
+        return f"\n[tabla {contador} de la pagina {num_pagina}]\n"
 
     texto_sin_tablas = _PATRON_TABLA_MD.sub(remplazo, texto)
     return texto_sin_tablas, tablas

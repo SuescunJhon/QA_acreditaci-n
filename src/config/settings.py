@@ -1,11 +1,14 @@
-# qdrant
-COLECCION = "pdfs_acreditacion"
+from functools import lru_cache
+from pathlib import Path
 
-# chunking
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# chunking (usados por src/ingesta/chunkeo.py)
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 0
 
-#embedding
+# embeddings: cambiar el modelo obliga a reindexar todos los documentos
 MODELO_EMBEDDING = "openai/text-embedding-3-large"
 DIMENSION_EMBEDDING = 3072
 
@@ -13,18 +16,31 @@ DIMENSION_EMBEDDING = 3072
 K = 5
 MODELO_LLM = "anthropic/claude-sonnet-5"
 
-PROMPT_ESTRUCTURADO = """Eres un asistente que responde preguntas basandote ESTRICTAMENTE en el contexto proporcionado, sin usar conocimiento externo. Sigue estos pasos antes de responder:
 
-1. Identifica que fragmentos del contexto son relevantes para la pregunta.
-2. Verifica si, con esos fragmentos, la pregunta se puede responder de forma completa, parcial, o no se puede responder.
-3. Redacta la respuesta final basandote unicamente en lo que identificaste en el paso 1.
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore", case_sensitive=False
+    )
 
-Contexto:
-{contexto}
+    database_url: str = "postgresql+psycopg://qa:qa@localhost:5432/qa_acreditacion"
+    storage_dir: Path = Path("data/pdfs")
+    max_pdf_mb: int = 50
 
-Pregunta: {pregunta}
+    qdrant_url: str | None = None
+    qdrant_api_key: str | None = None
+    qdrant_path: str | None = "data/qdrant"
+    qdrant_collection: str = "acreditacion_chunks"
 
-Responde siguiendo EXACTAMENTE este formato:
-Fragmentos relevantes: <cuales y por que, brevemente>
-Cobertura: <completa / parcial / nula>
-Respuesta final: <tu respuesta aqui; si la cobertura es nula, escribe "No se encuentra en el contexto">"""
+    openrouter_api_key: str | None = None
+    llm_model: str = MODELO_LLM
+    embedding_model: str = MODELO_EMBEDDING
+    embedding_dimension: int = Field(default=DIMENSION_EMBEDDING, gt=0)
+    embedding_batch_size: int = Field(default=64, gt=0)
+    top_k: int = Field(default=K, gt=0)
+
+    stale_processing_minutes: int = 30
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
